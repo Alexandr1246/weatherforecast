@@ -11,7 +11,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.weatherforecast.databinding.FragmentMainBinding
 import com.example.weatherforecast.isPermissionGranted
-
+//длякомита
 class MainFragment : Fragment() {
     private lateinit var pLauncher: ActivityResultLauncher<String>
     private lateinit var binding : FragmentMainBinding
