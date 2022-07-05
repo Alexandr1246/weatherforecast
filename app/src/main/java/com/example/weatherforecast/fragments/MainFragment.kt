@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import com.example.weatherforecast.R
 import com.example.weatherforecast.databinding.FragmentMainBinding
 import com.example.weatherforecast.isPermissionGranted
 
