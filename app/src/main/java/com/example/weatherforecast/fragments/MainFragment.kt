@@ -9,10 +9,18 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.FragmentActivity
+import com.example.weatherforecast.adapters.ViewPagerAdapter
 import com.example.weatherforecast.databinding.FragmentMainBinding
 import com.example.weatherforecast.isPermissionGranted
-//длякомита
+import com.google.android.material.tabs.TabLayoutMediator
+
 class MainFragment : Fragment() {
+    private val fList = listOf(
+        HoursFragment.newInstance(),
+        DaysFragment.newInstance()
+    )
+    private val tlist = listOf("HOURS", "DAYS")
     private lateinit var pLauncher: ActivityResultLauncher<String>
     private lateinit var binding : FragmentMainBinding
 
@@ -26,6 +34,16 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         checkPermission()
+        init()
+    }
+
+    private fun init() = with(binding){
+
+        val adapter = ViewPagerAdapter(activity as FragmentActivity, fList)
+        vp.adapter = adapter
+        TabLayoutMediator(tabLayout, vp){
+            tab, pos-> tab.text = tlist[pos]
+        }.attach()
     }
 
     private fun permissionListener(){

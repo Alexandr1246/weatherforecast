@@ -8,4 +8,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="card_view_color_gray">#4D454343</color>
+    <color name="task_bar_color">#E6302F2F</color>
+
 </resources>
