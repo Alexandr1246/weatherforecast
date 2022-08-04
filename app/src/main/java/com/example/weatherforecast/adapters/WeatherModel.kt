@@ -5,7 +5,7 @@ data class WeatherModel(
     val time: String,
     val condition: String,
     val currentTemp: String,
-    val maxTem: String,
+    val maxTemp: String,
     val minTemp: String,
     val imageUrl: String,
     val hours: String

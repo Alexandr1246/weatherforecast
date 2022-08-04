@@ -1,7 +1,6 @@
 package com.example.weatherforecast.fragments
 
 import android.Manifest
-import android.os.Build.VERSION_CODES.N
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -21,6 +20,7 @@ import com.example.weatherforecast.databinding.FragmentMainBinding
 import com.example.weatherforecast.isPermissionGranted
 import com.google.android.material.tabs.TabLayoutMediator
 import org.json.JSONObject
+import kotlin.collections.ArrayList
 
 const val API_KEY = "0fb7f31f833144f5af9132623220207"
 
@@ -93,26 +93,47 @@ class MainFragment : Fragment() {
 
     private fun parseWeatherData(result: String) {
         val mainObject = JSONObject(result)
+        val list = parseDays(mainObject)
+        parseCurrentData(mainObject, list[0])
+    }
+
+    private fun parseDays(mainObject: JSONObject): List<WeatherModel>{
+
+        val list = ArrayList<WeatherModel>()
+        val daysArray = mainObject.getJSONObject("forecast").getJSONArray("forecastday")
+        val name = mainObject.getJSONObject("location").getString("name")
+        for (i in 0 until daysArray.length()){
+            val day = daysArray[i] as JSONObject
+            val item = WeatherModel(
+                name, day.getString("date"),
+                day.getJSONObject("day").getJSONObject("condition").getString("text"), "",
+                day.getJSONObject("day").getString("maxtemp_c"),
+                day.getJSONObject("day").getString("mintemp_c"),
+                day.getJSONObject("day").getJSONObject("condition").getString("icon"),
+                day.getJSONArray("hour").toString()
+            )
+         list.add(item)
+        }
+        return list
+    }
+
+    private fun parseCurrentData(mainObject: JSONObject, weatherItem: WeatherModel){
         val item = WeatherModel(
             mainObject.getJSONObject("location").getString("name"),
             mainObject.getJSONObject("current").getString("last_updated"),
             mainObject.getJSONObject("current").getJSONObject("condition").getString("text"),
-            mainObject.getJSONObject("current").getString("temp_c"), "", "",
-            mainObject.getJSONObject("current").getString("icon"), ""
+            mainObject.getJSONObject("current").getString("temp_c"), weatherItem.maxTemp, weatherItem.minTemp,
+            mainObject.getJSONObject("current")
+                .getJSONObject("condition").getString("icon") , weatherItem.hours
         )
-        Log.d("ErrorLog", "City: ${item.city}")
-        Log.d("ErrorLog", "Time: ${item.time}")
-        Log.d("ErrorLog", "Condition: ${item.condition}")
-        Log.d("ErrorLog", "Temp: ${item.currentTemp}")
-        Log.d("ErrorLog", "Icon: ${item.imageUrl}")
-
+        Log.d("ErrorLog", "City: ${item.maxTemp}")
+        Log.d("ErrorLog", "Time: ${item.minTemp}")
+        Log.d("ErrorLog", "Condition: ${item.hours}")
     }
 
     companion object {
-
         @JvmStatic
         fun
                 newInstance() = MainFragment()
-
     }
 }
