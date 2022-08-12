@@ -11,14 +11,17 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.activityViewModels
 import com.android.volley.Request
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.example.weatherforecast.MainViewModel
 import com.example.weatherforecast.adapters.ViewPagerAdapter
 import com.example.weatherforecast.adapters.WeatherModel
 import com.example.weatherforecast.databinding.FragmentMainBinding
 import com.example.weatherforecast.isPermissionGranted
 import com.google.android.material.tabs.TabLayoutMediator
+import com.squareup.picasso.Picasso
 import org.json.JSONObject
 import kotlin.collections.ArrayList
 
@@ -29,9 +32,11 @@ class MainFragment : Fragment() {
         HoursFragment.newInstance(),
         DaysFragment.newInstance()
     )
-    private val tlist = listOf("HOURS", "DAYS")
+    private val tList = listOf("HOURS", "DAYS")
     private lateinit var pLauncher: ActivityResultLauncher<String>
     private lateinit var binding: FragmentMainBinding
+
+    private val model : MainViewModel by activityViewModels ()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,7 +51,25 @@ class MainFragment : Fragment() {
 
         checkPermission()
         init()
-        requestWeatherData("Odessa")
+        requestWeatherData("Kiev")
+        updateCurrentCart()
+
+    }
+    private fun updateCurrentCart() = with(binding  ){
+        model.livedataCurrent.observe(viewLifecycleOwner){
+            val maxMinTemp = "${it.maxTemp}C°/${it.minTemp}C°"
+            appDate.text = it.time
+            tvCity.text = it.city
+            tvTemp.text = it.currentTemp
+            tvCondition.text = it.condition
+            tvMaxMin.text = maxMinTemp
+
+
+            Picasso.get().load("https:"+it.imageUrl).into(imCondition)
+
+
+
+        }
 
     }
 
@@ -55,7 +78,7 @@ class MainFragment : Fragment() {
         val adapter = ViewPagerAdapter(activity as FragmentActivity, fList)
         vp.adapter = adapter
         TabLayoutMediator(tabLayout, vp) { tab, pos ->
-            tab.text = tlist[pos]
+            tab.text = tList[pos]
         }.attach()
     }
 
@@ -126,6 +149,8 @@ class MainFragment : Fragment() {
             mainObject.getJSONObject("current")
                 .getJSONObject("condition").getString("icon") , weatherItem.hours
         )
+
+        model.livedataCurrent.value = item
         Log.d("ErrorLog", "City: ${item.maxTemp}")
         Log.d("ErrorLog", "Time: ${item.minTemp}")
         Log.d("ErrorLog", "Condition: ${item.hours}")
